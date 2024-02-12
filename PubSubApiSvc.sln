@@ -1,0 +1,51 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1706.8
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiService", "ApiService\ApiService.csproj", "{919D43C4-E6FB-4B92-8DBF-5079612637B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiService.IntegrationTests", "ApiService.IntegrationTests\ApiService.IntegrationTests.csproj", "{3021E5B1-EAE7-4626-848C-126000D63896}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiService.Domain", "ApiService.Domain\ApiService.Domain.csproj", "{7BE886AD-2022-471D-AEB4-3C98EC77632A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiService.Infrastructure", "ApiService.Infrastructure\ApiService.Infrastructure.csproj", "{3D0EC91C-F0D8-42D3-B3CE-21FFC6C45D54}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1D879943-0ED2-4D8C-8A3F-F89370082AA9}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		.env = .env
+		.env.example = .env.example
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{919D43C4-E6FB-4B92-8DBF-5079612637B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{919D43C4-E6FB-4B92-8DBF-5079612637B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{919D43C4-E6FB-4B92-8DBF-5079612637B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{919D43C4-E6FB-4B92-8DBF-5079612637B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3021E5B1-EAE7-4626-848C-126000D63896}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3021E5B1-EAE7-4626-848C-126000D63896}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3021E5B1-EAE7-4626-848C-126000D63896}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3021E5B1-EAE7-4626-848C-126000D63896}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BE886AD-2022-471D-AEB4-3C98EC77632A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BE886AD-2022-471D-AEB4-3C98EC77632A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BE886AD-2022-471D-AEB4-3C98EC77632A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BE886AD-2022-471D-AEB4-3C98EC77632A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D0EC91C-F0D8-42D3-B3CE-21FFC6C45D54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D0EC91C-F0D8-42D3-B3CE-21FFC6C45D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D0EC91C-F0D8-42D3-B3CE-21FFC6C45D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D0EC91C-F0D8-42D3-B3CE-21FFC6C45D54}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C9A8D25-515E-40B3-9FDB-18D868ACF67E}
+	EndGlobalSection
+EndGlobal
