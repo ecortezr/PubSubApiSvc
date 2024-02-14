@@ -37,13 +37,19 @@ public class Program
         builder.Services.AddDomain(configuration);
 
         // Add infraestructure services
-        if (builder.Environment.EnvironmentName == "IntegrationTesting")
+        switch (builder.Environment.EnvironmentName)
         {
-            builder.Services.AddInfrastructureForIntegration(configuration);
-        }
-        else
-        {
-            builder.Services.AddInfrastructure(configuration);
+            case "UnitTesting":
+                builder.Services.AddInfrastructureForUnitTests(configuration);
+                break;
+
+            case "IntegrationTesting":
+                builder.Services.AddInfrastructureForIntegrationTests(configuration);
+                break;
+
+            default:
+                builder.Services.AddInfrastructure(configuration);
+                break;
         }
 
         // Configure Kafka from config

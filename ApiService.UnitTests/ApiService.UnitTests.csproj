@@ -19,15 +19,30 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="AutoFixture" Version="4.17.0" />
+    <PackageReference Include="AutoFixture.Xunit2" Version="4.17.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.8" />
+    <PackageReference Include="Moq" Version="4.16.1" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Validators\" />
+    <None Remove="Setup\" />
+    <None Remove="UseCases\" />
+    <None Remove="UseCases\Permissions\" />
+    <None Remove="UseCases\Permissions\Queries\" />
+    <None Remove="UseCases\Permissions\Commands\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Validators\" />
+    <Folder Include="Setup\" />
+    <Folder Include="UseCases\" />
+    <Folder Include="UseCases\Permissions\" />
+    <Folder Include="UseCases\Permissions\Queries\" />
+    <Folder Include="UseCases\Permissions\Commands\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ApiService.Domain\ApiService.Domain.csproj" />
+    <ProjectReference Include="..\ApiService\ApiService.csproj" />
   </ItemGroup>
 </Project>

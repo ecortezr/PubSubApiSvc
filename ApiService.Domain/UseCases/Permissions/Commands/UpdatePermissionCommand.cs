@@ -18,7 +18,6 @@ public class UpdatePermissionCommand : UpdateBodyPermissionCommand
     public int Id { get; set; }
 }
 
-
 public class UpdatePermissionCommandHandler : IRequestHandler<UpdatePermissionCommand, PermissionRecord?>
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -58,9 +57,8 @@ public class UpdatePermissionCommandHandler : IRequestHandler<UpdatePermissionCo
                 permission
             );
         }
-        var permissionRecord = new PermissionRecord(permission.Id, permission.Name);
 
-        return permissionRecord;
+        return new PermissionRecord(permission.Id, permission.Name);
     }
 }
 

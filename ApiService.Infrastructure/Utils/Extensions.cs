@@ -60,9 +60,24 @@ namespace ApiService.Infrastructure.Utils
             return AddCommonServices(services);
         }
 
-        public static IServiceCollection AddInfrastructureForIntegration(
+        public static IServiceCollection AddInfrastructureForIntegrationTests(
             this IServiceCollection services,
             IConfiguration configuration)
+        {
+            services = AddDbContextWithSqlite(services);
+
+            return AddCommonServices(services);
+        }
+
+        public static IServiceCollection AddInfrastructureForUnitTests(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            return AddDbContextWithSqlite(services)
+                .AddScoped<IUnitOfWork, UnitOfWork>();
+        }
+
+        private static IServiceCollection AddDbContextWithSqlite(IServiceCollection services)
         {
             // DB context
             var connection = new SqliteConnection("DataSource=:memory:");
@@ -70,7 +85,7 @@ namespace ApiService.Infrastructure.Utils
             services.AddDbContext<ApiDbContext>(opt =>
                           opt.UseSqlite(connection));
 
-            return AddCommonServices(services);
+            return services;
         }
 
         private static IServiceCollection AddCommonServices(IServiceCollection services)
@@ -83,7 +98,7 @@ namespace ApiService.Infrastructure.Utils
             services
                 .AddSingleton<IKafkaProducer, KafkaProducer>();
 
-            // Kafka Producer
+            // Kafka Consumer
             services
                 .AddSingleton<IKafkaConsumer, KafkaConsumer>();
 
