@@ -26,13 +26,11 @@ public class UpdatePermissionCommandHandler : IRequestHandler<UpdatePermissionCo
     private readonly IOptions<KafkaOptions> _kafkaOptions;
 
     public UpdatePermissionCommandHandler(
-        //IConfiguration configuration,
         IUnitOfWork unitOfWork,
         IKafkaProducer kafkaProducer,
         IOptions<KafkaOptions> kafkaOptions
     )
     {
-        //_configuration = configuration;
         _unitOfWork = unitOfWork;
         _kafkaProducer = kafkaProducer;
         _kafkaOptions = kafkaOptions;
@@ -54,26 +52,15 @@ public class UpdatePermissionCommandHandler : IRequestHandler<UpdatePermissionCo
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await ProduceKafkaPermisionMessage(permission);
+            await _kafkaProducer.Produce(
+                _kafkaOptions.Value.PermissionsTopicName,
+                NameOperationEnum.modified,
+                permission
+            );
         }
         var permissionRecord = new PermissionRecord(permission.Id, permission.Name);
 
         return permissionRecord;
-    }
-
-    private async Task ProduceKafkaPermisionMessage(Permission permission)
-    {
-        var topicMessage = new PermissionTopicMessage(
-            Guid.NewGuid(),
-            NameOperationEnum.modified,
-            new PermissionRecord(permission.Id, permission.Name)
-        );
-        await _kafkaProducer.Produce(
-            _kafkaOptions.Value.PermissionsTopicName,
-            topicMessage
-        );
-
-        Console.WriteLine($"A new 'modified' message was published on the topic '{_kafkaOptions.Value.PermissionsTopicName}'. Message: {topicMessage}");
     }
 }
 

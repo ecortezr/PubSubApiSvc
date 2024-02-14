@@ -2,6 +2,7 @@
 using ApiService.Domain.Repositories;
 using ApiService.Infrastructure.HostedServices;
 using ApiService.Infrastructure.Storage;
+using Elasticsearch.Net;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +41,7 @@ namespace ApiService.Infrastructure.Utils
 
             var settings = new ConnectionSettings(new Uri(url))
                 .BasicAuthentication(username, password)
+                .ServerCertificateValidationCallback(CertificateValidations.AllowAll)
                 .PrettyJson()
                 .EnableApiVersioningHeader()
                 .DefaultIndex(defaultIndex)
@@ -80,6 +82,10 @@ namespace ApiService.Infrastructure.Utils
             // Kafka Producer
             services
                 .AddSingleton<IKafkaProducer, KafkaProducer>();
+
+            // Kafka Producer
+            services
+                .AddSingleton<IKafkaConsumer, KafkaConsumer>();
 
             // Hosted services
             services

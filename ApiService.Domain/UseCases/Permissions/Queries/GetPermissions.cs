@@ -6,11 +6,11 @@ using Microsoft.Extensions.Options;
 
 namespace ApiService.Domain.UseCases.Permissions.Queries;
 
-public class GetPermissionsQuery : IRequest<List<GetPermissionsQueryResponse>>
+public class GetPermissionsQuery : IRequest<List<PermissionRecord>>
 {
 }
 
-public class GetPermissionsQueryHandler : IRequestHandler<GetPermissionsQuery, List<GetPermissionsQueryResponse>>
+public class GetPermissionsQueryHandler : IRequestHandler<GetPermissionsQuery, List<PermissionRecord>>
 {
     private readonly Nest.IElasticClient _elasticClient;
     private readonly IKafkaProducer _kafkaProducer;
@@ -27,7 +27,7 @@ public class GetPermissionsQueryHandler : IRequestHandler<GetPermissionsQuery, L
         _kafkaOptions = kafkaOptions;
     }
 
-    public async Task<List<GetPermissionsQueryResponse>> Handle(GetPermissionsQuery request, CancellationToken cancellationToken)
+    public async Task<List<PermissionRecord>> Handle(GetPermissionsQuery request, CancellationToken cancellationToken)
     {
         var searchResponse = await _elasticClient
             .SearchAsync<PermissionRecord>(
@@ -35,32 +35,12 @@ public class GetPermissionsQueryHandler : IRequestHandler<GetPermissionsQuery, L
                 cancellationToken
             );
 
-        await ProduceKafkaPermisionMessage();
-
-        return searchResponse.Documents
-            .Select(p =>
-                new GetPermissionsQueryResponse(p.Id, p.Name)
-            )
-            .ToList();
-    }
-
-    private async Task ProduceKafkaPermisionMessage()
-    {
-        var topicMessage = new PermissionTopicMessage(
-            Guid.NewGuid(),
-            NameOperationEnum.get,
-            null
-        );
         await _kafkaProducer.Produce(
             _kafkaOptions.Value.PermissionsTopicName,
-            topicMessage
+            NameOperationEnum.get
         );
 
-        Console.WriteLine($"A new 'get' message was published on the topic '{_kafkaOptions.Value.PermissionsTopicName}'. Message: {topicMessage}");
+        return searchResponse.Documents
+            .ToList();
     }
 }
-
-public record GetPermissionsQueryResponse(
-    int Id,
-    string Name
-);

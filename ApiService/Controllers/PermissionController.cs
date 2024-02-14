@@ -37,6 +37,7 @@ public class PermissionController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(PermissionRecord), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public async Task<IActionResult> RequestPermission([FromBody] CreatePermissionCommand command)
     {
@@ -52,6 +53,7 @@ public class PermissionController : ControllerBase
     [HttpPut]
     [ProducesResponseType(typeof(PermissionRecord), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [Route("{Id:int}")]
     public async Task<IActionResult> UpdatePermission([FromRoute] int Id, [FromBody] UpdateBodyPermissionCommand command)

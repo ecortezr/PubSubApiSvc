@@ -408,5 +408,8 @@ ASALocalRun/
 */bin
 */obj
 
+# Logs
+*/logs
+
 # env file
 .env

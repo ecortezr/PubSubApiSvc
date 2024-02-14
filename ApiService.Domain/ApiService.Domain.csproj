@@ -15,6 +15,7 @@
     <None Remove="UseCases\Permissions\Commands\" />
     <None Remove="UseCases\Permissions\Queries\" />
     <None Remove="Utils\" />
+    <None Remove="Validators\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
@@ -25,6 +26,7 @@
     <Folder Include="UseCases\Permissions\Commands\" />
     <Folder Include="UseCases\Permissions\Queries\" />
     <Folder Include="Utils\" />
+    <Folder Include="Validators\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.15" />
@@ -34,5 +36,6 @@
     </PackageReference>
     <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="NEST" Version="7.17.5" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
   </ItemGroup>
 </Project>

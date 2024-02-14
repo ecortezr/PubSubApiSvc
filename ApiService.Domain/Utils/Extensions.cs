@@ -1,4 +1,7 @@
 ﻿using ApiService.Domain.UseCases.Permissions.Commands;
+using ApiService.Domain.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +14,11 @@ public static class Extensions
         IConfiguration configuration)
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<CreatePermissionCommand>());
+
+        services.AddFluentValidationAutoValidation();
+        services.AddFluentValidationClientsideAdapters();
+        services.AddValidatorsFromAssemblyContaining<CreatePermissionCommandValidator>();
+        services.AddValidatorsFromAssemblyContaining<UpdateBodyPermissionCommandValidator>();
 
         return services;
     }

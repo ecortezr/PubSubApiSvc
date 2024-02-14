@@ -19,13 +19,11 @@ public class CreatePermissionCommandHandler : IRequestHandler<CreatePermissionCo
     private readonly IOptions<KafkaOptions> _kafkaOptions;
 
     public CreatePermissionCommandHandler(
-        //IConfiguration configuration,
         IUnitOfWork unitOfWork,
         IKafkaProducer kafkaProducer,
         IOptions<KafkaOptions> kafkaOptions
     )
     {
-        //_configuration = configuration;
         _unitOfWork = unitOfWork;
         _kafkaProducer = kafkaProducer;
         _kafkaOptions = kafkaOptions;
@@ -45,24 +43,14 @@ public class CreatePermissionCommandHandler : IRequestHandler<CreatePermissionCo
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var permissionRecord = new PermissionRecord(newPermission.Id, newPermission.Name);
-        await ProduceKafkaPermisionMessage(permissionRecord);
 
-        return permissionRecord;
-    }
-
-    private async Task ProduceKafkaPermisionMessage(PermissionRecord permission)
-    {
-        var topicMessage = new PermissionTopicMessage(
-            Guid.NewGuid(),
-            NameOperationEnum.request,
-            permission
-        );
         await _kafkaProducer.Produce(
             _kafkaOptions.Value.PermissionsTopicName,
-            topicMessage
+            NameOperationEnum.request,
+            permissionRecord
         );
 
-        Console.WriteLine($"A new 'request' message was published on the topic '{_kafkaOptions.Value.PermissionsTopicName}'. Message: {topicMessage}");
+        return permissionRecord;
     }
 }
 

@@ -5,12 +5,13 @@ using ApiService.Domain.Entities;
 using ApiService.Domain.Messages;
 using ApiService.Domain.Repositories;
 using ApiService.IntegrationTests.Setup;
+using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Nest;
 
-namespace ApiService.IntegrationTests;
+namespace ApiService.IntegrationTests.Controller;
 
-public class IntegrationTest1
+public class PermissionControllerTests
 {
     [Theory]
     [TestControllerSetup]
@@ -32,6 +33,32 @@ public class IntegrationTest1
 
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+    }
+
+    [Theory]
+    [TestControllerSetup]
+    public async Task PermissionController_AddPermission_SuccessfulKafkaPubSub(HttpClient client, IConsumer<Null, string> consumer, string permissionName)
+    {
+        var response = await client.PostAsJsonAsync("/Api/Permission", new
+        {
+            Name = permissionName
+        });
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        var addedPermission = JsonSerializer.Deserialize<PermissionRecord>(jsonResponse);
+
+        var consumeResult = consumer.Consume(TimeSpan.FromSeconds(5));
+        var consumedPermission = JsonSerializer.Deserialize<PermissionTopicMessage>(consumeResult.Message.Value);
+
+        Assert.NotNull(addedPermission);
+        Assert.NotNull(consumedPermission);
+        Assert.Equal(
+            NameOperationEnum.request,
+            consumedPermission?.NameOperation
+        );
+        Assert.Equal(
+            addedPermission,
+            consumedPermission?.Permission
+        );
     }
 
     [Theory]
@@ -65,7 +92,6 @@ public class IntegrationTest1
         await Task.Delay(10000);
         var elasticResponse = await elasticClient.GetAsync<PermissionRecord>(addedPermission?.Id);
 
-        // Assert
         Assert.True(elasticResponse.IsValid);
     }
 }
