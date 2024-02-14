@@ -8,6 +8,7 @@ public class ApiDbContext : DbContext
     public ApiDbContext(DbContextOptions<ApiDbContext> options)
         : base(options)
     {
+        Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

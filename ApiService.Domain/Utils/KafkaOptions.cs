@@ -1,4 +1,4 @@
-﻿namespace ApiService.Infrastructure.Utils
+﻿namespace ApiService.Domain.Utils
 {
     public class KafkaOptions
     {

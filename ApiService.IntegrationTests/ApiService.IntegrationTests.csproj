@@ -24,9 +24,17 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.8" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
     <PackageReference Include="Testcontainers" Version="3.7.0" />
+    <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.12.0" />
+    <PackageReference Include="Testcontainers.Elasticsearch" Version="3.7.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ApiService\ApiService.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Setup\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Setup\" />
   </ItemGroup>
 </Project>

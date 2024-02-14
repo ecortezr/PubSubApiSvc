@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using ApiService.Domain.Repositories;
-using ApiService.Infrastructure.Utils;
+using ApiService.Domain.Utils;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 

@@ -2,6 +2,7 @@
 using ApiService.Domain.Repositories;
 using ApiService.Infrastructure.HostedServices;
 using ApiService.Infrastructure.Storage;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,47 @@ namespace ApiService.Infrastructure.Utils
                     });
             });
 
+            // Elasticsearch
+            var url = $"{configuration["ELKConfiguration:Url"]}";
+            var username = $"{configuration["ELKConfiguration:Username"]}";
+            var password = $"{configuration["ELKConfiguration:Password"]}";
+            var defaultIndex = $"{configuration["ELKConfiguration:Index"]}";
+
+            var settings = new ConnectionSettings(new Uri(url))
+                .BasicAuthentication(username, password)
+                .PrettyJson()
+                .EnableApiVersioningHeader()
+                .DefaultIndex(defaultIndex)
+                .DefaultMappingFor<PermissionRecord>(m =>
+                    m.IdProperty(p => p.Id)
+                );
+
+            var client = new ElasticClient(settings);
+            client.Indices.Create(
+                defaultIndex,
+                index => index.Map<PermissionRecord>(x => x.AutoMap())
+            );
+
+            services.AddSingleton<IElasticClient>(client);
+
+            return AddCommonServices(services);
+        }
+
+        public static IServiceCollection AddInfrastructureForIntegration(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            // DB context
+            var connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+            services.AddDbContext<ApiDbContext>(opt =>
+                          opt.UseSqlite(connection));
+
+            return AddCommonServices(services);
+        }
+
+        private static IServiceCollection AddCommonServices(IServiceCollection services)
+        {
             // Repository
             services
                 .AddScoped<IUnitOfWork, UnitOfWork>();
@@ -43,43 +85,7 @@ namespace ApiService.Infrastructure.Utils
             services
                 .AddHostedService<KafKaPermissionTopicConsumer>();
 
-            // Elasticsearch
-            var url = $"{configuration["ELKConfiguration:Url"]}";
-            var username = $"{configuration["ELKConfiguration:Username"]}";
-            var password = $"{configuration["ELKConfiguration:Password"]}";
-            var defaultIndex = $"{configuration["ELKConfiguration:Index"]}";
-
-            var settings = new ConnectionSettings(new Uri(url))
-                .BasicAuthentication(username, password)
-                .PrettyJson()
-                .EnableApiVersioningHeader()
-                .DefaultIndex(defaultIndex);
-
-            AddDefaultELKMappings(settings);
-
-            var client = new ElasticClient(settings);
-
-            services.AddSingleton<IElasticClient>(client);
-
-            CreateELKIndex(client, defaultIndex);
-
             return services;
-        }
-
-        private static void AddDefaultELKMappings(ConnectionSettings settings)
-        {
-            settings
-                .DefaultMappingFor<PermissionRecord>(m =>
-                    m.IdProperty(p => p.Id)
-                );
-        }
-
-        private static void CreateELKIndex(IElasticClient client, string indexName)
-        {
-            client.Indices.Create(
-                indexName,
-                index => index.Map<PermissionRecord>(x => x.AutoMap())
-            );
         }
     }
 }

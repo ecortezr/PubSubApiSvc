@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.Xunit2;
 
-namespace ApiService.IntegrationTests;
+namespace ApiService.IntegrationTests.Setup;
 
 public class TestControllerSetup : AutoDataAttribute
 {

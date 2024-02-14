@@ -6,6 +6,8 @@ services:
     image: mcr.microsoft.com/mssql/server:latest
     ports:
       - ${SQLSERVER_PORT}:1433
+    volumes:
+      - "sqlserver_data:/var/opt/mssql"
     environment:
       - MSSQL_PID=${MSSQL_PID}
       - SA_PASSWORD=${SQLSERVER_PASSWORD}
@@ -284,4 +286,6 @@ volumes:
   zookeeper_data:
     driver: local
   kafka_data:
+    driver: local
+  sqlserver_data:
     driver: local

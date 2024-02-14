@@ -15,6 +15,6 @@ public enum NameOperationEnum
 public record PermissionTopicMessage (
     Guid Id,
     NameOperationEnum NameOperation,
-    PermissionRecord Permission
+    PermissionRecord? Permission
 );
 

@@ -1,8 +1,7 @@
-﻿using System.Collections.Concurrent;
-using System.Text.Json;
+﻿using System.Text.Json;
 using ApiService.Domain.Entities;
 using ApiService.Domain.Messages;
-using ApiService.Infrastructure.Utils;
+using ApiService.Domain.Utils;
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -68,23 +67,57 @@ namespace ApiService.Infrastructure.HostedServices
                 {
                     var consumeResult = consumer.Consume(stoppingToken);
                     var consumedPermission = JsonSerializer.Deserialize<PermissionTopicMessage>(consumeResult.Message.Value);
-
                     Console.WriteLine($"Message received from {consumeResult.TopicPartitionOffset}: {consumedPermission}");
 
-                    if (consumedPermission is not null)
+                    if (
+                        consumedPermission is not null
+                        && consumedPermission.NameOperation != NameOperationEnum.get
+                    )
                     {
-                        Console.WriteLine($"Product details: {{ Id: {consumedPermission.Permission.Id}, Name: '{consumedPermission.Permission.Name}' }}");
+                        Console.WriteLine($"Permission details: {{ Id: {consumedPermission.Permission.Id}, Name: '{consumedPermission.Permission.Name}' }}");
 
-                        // Add product to Elastic Search
-                        var indexResponse = await _elasticClient
-                            .IndexDocumentAsync(consumedPermission.Permission, stoppingToken);
-                        if (!indexResponse.IsValid)
+                        var permissionRecord = consumedPermission.Permission;
+                        if (consumedPermission.NameOperation == NameOperationEnum.request)
                         {
-                            Console.WriteLine($"debugInfo: {indexResponse.DebugInformation}");
-                            Console.WriteLine($"error: {indexResponse.ServerError.Error}");
+                            // Add permission to Elastic Search
+                            var indexResponse = await _elasticClient
+                                .IndexDocumentAsync(
+                                    permissionRecord,
+                                    stoppingToken
+                                );
+
+                            if (indexResponse.IsValid)
+                            {
+                                Console.WriteLine($"Permission with Id: {permissionRecord.Id} was added to ELK");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"debugInfo: {indexResponse.DebugInformation}");
+                                Console.WriteLine($"error: {indexResponse.ServerError.Error}");
+                            }
+                        }
+                        else
+                        {
+                            var updateResponse = await _elasticClient
+                                .UpdateAsync<PermissionRecord>(
+                                    permissionRecord.Id,
+                                    u => u.Doc(permissionRecord),
+                                    stoppingToken
+                                );
+                            if (updateResponse.IsValid)
+                            {
+                                Console.WriteLine($"Permission with Id: {permissionRecord.Id} was updated on ELK");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"debugInfo: {updateResponse.DebugInformation}");
+                                Console.WriteLine($"error: {updateResponse.ServerError.Error}");
+                            }
                         }
                     }
                 }
+
+                consumer.Close();
 
                 Console.WriteLine($"StartConsumerAsync method ended!");
             }

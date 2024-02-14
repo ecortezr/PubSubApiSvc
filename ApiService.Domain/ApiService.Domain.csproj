@@ -10,11 +10,21 @@
     <None Remove="Entities\" />
     <None Remove="Repositories\" />
     <None Remove="Messages\" />
+    <None Remove="UseCases\" />
+    <None Remove="UseCases\Permissions\" />
+    <None Remove="UseCases\Permissions\Commands\" />
+    <None Remove="UseCases\Permissions\Queries\" />
+    <None Remove="Utils\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
     <Folder Include="Repositories\" />
     <Folder Include="Messages\" />
+    <Folder Include="UseCases\" />
+    <Folder Include="UseCases\Permissions\" />
+    <Folder Include="UseCases\Permissions\Commands\" />
+    <Folder Include="UseCases\Permissions\Queries\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.15" />
@@ -22,5 +32,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="NEST" Version="7.17.5" />
   </ItemGroup>
 </Project>

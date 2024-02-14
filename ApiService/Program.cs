@@ -1,4 +1,7 @@
-﻿using ApiService.Infrastructure.Utils;
+﻿using ApiService.Domain.Utils;
+using ApiService.Infrastructure.Utils;
+using Serilog;
+using Serilog.Events;
 
 namespace ApiService;
 
@@ -6,18 +9,42 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        // Create Serilog logger
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Warning)
+            .WriteTo.Console()
+            .WriteTo.File("logs/response-time-log-.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+
         var builder = WebApplication.CreateBuilder(args);
         var configuration = builder.Configuration;
 
         // Add services to the container.
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers().AddJsonOptions(options =>
+            options.JsonSerializerOptions.PropertyNamingPolicy = null
+        );
+
+        // Adding Serilog
+        builder.Host.UseSerilog();
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        // Add domain elements
+        builder.Services.AddDomain(configuration);
+
         // Add infraestructure services
-        builder.Services.AddInfrastructure(configuration);
+        if (builder.Environment.EnvironmentName == "IntegrationTesting")
+        {
+            builder.Services.AddInfrastructureForIntegration(configuration);
+        }
+        else
+        {
+            builder.Services.AddInfrastructure(configuration);
+        }
 
         // Configure Kafka from config
         builder.Services.Configure<KafkaOptions>(builder.Configuration);
@@ -30,6 +57,8 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseSerilogRequestLogging();
 
         app.UseAuthorization();
 

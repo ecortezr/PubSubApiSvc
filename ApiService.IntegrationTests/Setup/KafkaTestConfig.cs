@@ -1,4 +1,4 @@
-﻿namespace ApiService.IntegrationTests;
+﻿namespace ApiService.IntegrationTests.Setup;
 
 public class KafkaTestConfig
 {

@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using Confluent.Kafka;
 
-namespace ApiService.IntegrationTests;
+namespace ApiService.IntegrationTests.Setup;
 
 public class KafkaConsumerSetup : ICustomization
 {

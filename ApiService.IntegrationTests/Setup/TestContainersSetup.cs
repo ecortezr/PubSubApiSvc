@@ -6,7 +6,7 @@ using Confluent.Kafka.Admin;
 using DotNet.Testcontainers.Builders;
 using Nito.AsyncEx;
 
-namespace ApiService.IntegrationTests;
+namespace ApiService.IntegrationTests.Setup;
 
 public class TestContainersSetup : ICustomization
 {
