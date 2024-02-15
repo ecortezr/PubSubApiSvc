@@ -26,6 +26,7 @@ public class LogActionFilter : ActionFilterAttribute
         var controllerName = routeData.Values["controller"];
         var actionName = routeData.Values["action"];
         var message = String.Format("{0} '{1}' on controller:{2}", moment.ToUpper(), actionName, controllerName);
+
         _logger.LogInformation(message);
     }
 }
