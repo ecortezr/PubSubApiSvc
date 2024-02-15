@@ -26,4 +26,10 @@
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="ActionFilters\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ActionFilters\" />
+  </ItemGroup>
 </Project>

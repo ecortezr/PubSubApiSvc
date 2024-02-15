@@ -1,4 +1,5 @@
-﻿using ApiService.Domain.Utils;
+﻿using ApiService.ActionFilters;
+using ApiService.Domain.Utils;
 using ApiService.Infrastructure.Utils;
 using Serilog;
 using Serilog.Events;
@@ -28,6 +29,9 @@ public class Program
 
         // Adding Serilog
         builder.Host.UseSerilog();
+
+        // Add filter to log controller actions
+        builder.Services.AddScoped<LogActionFilter>();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
