@@ -22,24 +22,25 @@ public class TestContainersSetup : ICustomization
             AsyncContext.Run(async () =>
             {
                 await _kafkaContainer.StopAsync();
-                await _zookeeperContainer.StopAsync();
             });
         }
+        else
+        {
+            var zookeeperContainerName = $"zookeeper_{fixture.Create<string>()}";
+            _zookeeperContainer = new ContainerBuilder()
+                .WithImage("confluentinc/cp-zookeeper:7.0.1")
+                .WithName(zookeeperContainerName)
+                .WithPortBinding(2181, true)
+                .WithEnvironment(new Dictionary<string, string>
+                {
+                    {"ZOOKEEPER_CLIENT_PORT", "2181"},
+                    {"ZOOKEEPER_TICK_TIME", "2000"}
+                })
+                .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(2181))
+                .Build();
 
-        var zookeeperContainerName = $"zookeeper_{fixture.Create<string>()}";
-        _zookeeperContainer = new ContainerBuilder()
-            .WithImage("confluentinc/cp-zookeeper:7.0.1")
-            .WithName(zookeeperContainerName)
-            .WithPortBinding(2181, true)
-            .WithEnvironment(new Dictionary<string, string>
-            {
-                {"ZOOKEEPER_CLIENT_PORT", "2181"},
-                {"ZOOKEEPER_TICK_TIME", "2000"}
-            })
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(2181))
-            .Build();
-
-        AsyncContext.Run(async () => await _zookeeperContainer.StartAsync());
+            AsyncContext.Run(async () => await _zookeeperContainer.StartAsync());
+        }
 
         var zookeeperHostPort = _zookeeperContainer.GetMappedPublicPort(2181);
 
