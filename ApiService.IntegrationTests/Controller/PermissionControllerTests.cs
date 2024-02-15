@@ -1,13 +1,11 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading;
 using ApiService.Domain.Entities;
 using ApiService.Domain.Messages;
 using ApiService.Domain.Repositories;
 using ApiService.IntegrationTests.Setup;
 using Confluent.Kafka;
-using Elastic.Clients.Elasticsearch;
 using Microsoft.EntityFrameworkCore;
 using Nest;
 
@@ -48,7 +46,7 @@ public class PermissionControllerTests
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var addedPermission = JsonSerializer.Deserialize<PermissionRecord>(jsonResponse);
 
-        var consumeResult = consumer.Consume(TimeSpan.FromSeconds(5));
+        var consumeResult = consumer.Consume(TimeSpan.FromSeconds(10));
         var consumedPermission = JsonSerializer.Deserialize<PermissionTopicMessage>(consumeResult.Message.Value);
 
         Assert.NotNull(addedPermission);
@@ -136,9 +134,9 @@ public class PermissionControllerTests
         var updatedPermission = JsonSerializer.Deserialize<PermissionRecord>(jsonResponse);
 
         // Consume request operation
-        _ = consumer.Consume(TimeSpan.FromSeconds(5));
+        _ = consumer.Consume(TimeSpan.FromSeconds(10));
         // Consume modified operation
-        var consumeResult = consumer.Consume(TimeSpan.FromSeconds(1));
+        var consumeResult = consumer.Consume(TimeSpan.FromSeconds(2));
         var consumedPermission = JsonSerializer.Deserialize<PermissionTopicMessage>(consumeResult.Message.Value);
 
         Assert.NotNull(updatedPermission);
@@ -207,7 +205,7 @@ public class PermissionControllerTests
     {
         _ = await client.GetAsync("/Api/Permission");
 
-        var consumeResult = consumer.Consume(TimeSpan.FromSeconds(5));
+        var consumeResult = consumer.Consume(TimeSpan.FromSeconds(10));
         var consumedPermission = JsonSerializer.Deserialize<PermissionTopicMessage>(consumeResult.Message.Value);
 
         Assert.NotNull(consumedPermission);

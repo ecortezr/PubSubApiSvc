@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using AutoFixture;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Builders;
 using Nito.AsyncEx;
 
@@ -10,10 +11,23 @@ namespace ApiService.IntegrationTests.Setup;
 
 public class TestContainersSetup : ICustomization
 {
+    private static bool _areRunning;
+    private static IContainer _zookeeperContainer;
+    private static IContainer _kafkaContainer;
+
     public void Customize(IFixture fixture)
     {
+        if (_areRunning)
+        {
+            AsyncContext.Run(async () =>
+            {
+                await _kafkaContainer.StopAsync();
+                await _zookeeperContainer.StopAsync();
+            });
+        }
+
         var zookeeperContainerName = $"zookeeper_{fixture.Create<string>()}";
-        var zookeeperContainer = new ContainerBuilder()
+        _zookeeperContainer = new ContainerBuilder()
             .WithImage("confluentinc/cp-zookeeper:7.0.1")
             .WithName(zookeeperContainerName)
             .WithPortBinding(2181, true)
@@ -25,14 +39,13 @@ public class TestContainersSetup : ICustomization
             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(2181))
             .Build();
 
-        AsyncContext.Run(async () => await zookeeperContainer.StartAsync());
-        //zookeeperContainer.StartAsync().ConfigureAwait(false);
+        AsyncContext.Run(async () => await _zookeeperContainer.StartAsync());
 
-        var zookeeperHostPort = zookeeperContainer.GetMappedPublicPort(2181);
+        var zookeeperHostPort = _zookeeperContainer.GetMappedPublicPort(2181);
 
         var kafkaHostPort = GetAvailablePort();
         var kafkaContainerName = $"kafka_{fixture.Create<string>()}";
-        var kafkaContainer = new ContainerBuilder()
+        _kafkaContainer = new ContainerBuilder()
             .WithImage("confluentinc/cp-kafka:7.0.1")
             .WithName(kafkaContainerName)
             .WithHostname(kafkaContainerName)
@@ -52,7 +65,7 @@ public class TestContainersSetup : ICustomization
             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(9092))
             .Build();
 
-        AsyncContext.Run(async () => await kafkaContainer.StartAsync());
+        AsyncContext.Run(async () => await _kafkaContainer.StartAsync());
 
         var topicName = $"orders_{fixture.Create<string>()}";
         var bootstrapServers = $"localhost:{kafkaHostPort}";
@@ -64,6 +77,8 @@ public class TestContainersSetup : ICustomization
             TopicName = topicName,
             BootstrapServers = bootstrapServers
         });
+
+        _areRunning = true;
     }
 
     private static int GetAvailablePort()

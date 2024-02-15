@@ -1,13 +1,26 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 WORKDIR /src
-COPY . .
+COPY ./*.sln ./
+COPY ./ApiService/*.csproj ./ApiService/
+COPY ./ApiService.Domain/*.csproj ./ApiService.Domain/
+COPY ./ApiService.Infrastructure/*.csproj ./ApiService.Infrastructure/
+COPY ./ApiService.IntegrationTests/*.csproj ./ApiService.IntegrationTests/
+COPY ./ApiService.UnitTests/*.csproj ./ApiService.UnitTests/
+RUN dotnet restore
+COPY ./ApiService/. ./ApiService/
+COPY ./ApiService.Domain/. ./ApiService.Domain/
+COPY ./ApiService.Infrastructure/. ./ApiService.Infrastructure/
 
-RUN dotnet publish "ApiService/ApiService.csproj" -c Release -o /app
+FROM build AS publish
+WORKDIR /src/ApiService
+RUN dotnet publish -c Release -o /app --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
-
+FROM base AS run
 WORKDIR /app
-COPY --from=build /app ./
+COPY --from=publish /app ./
 
 ENTRYPOINT ["dotnet", "ApiService.dll"]
