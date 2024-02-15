@@ -24,13 +24,14 @@ docker-compose up
 
 The first time it'll take a few minutes, because it'll download the Docker's images for first time. Also, you can use `-d` at the end, so that it frees the console and you can continue executing commands.
 
-4. Open Visual Studio and access the solution that you will find in the project folder.
+5. Open Visual Studio and access the solution that you will find in the project folder.
 
-5. In Visual Studio, run the application (first verify that the required services are healthy and available to be consumed)
+6. In Visual Studio, run the application (first verify that the required services are healthy and available to be consumed)
 
-6. Access the different endpoints that you can consume through Swagger
+7. Access the different endpoints that you can consume through Swagger
 
 ## Tests
+
 1. Make sure all services are stopped
 
 ```sh
