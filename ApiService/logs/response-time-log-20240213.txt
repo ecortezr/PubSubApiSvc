@@ -1,5 +1,0 @@
-2024-02-13 20:01:07.727 -05:00 [INF] Now listening on: http://localhost:5193
-2024-02-13 20:01:07.793 -05:00 [INF] Application started. Press Ctrl+C to shut down.
-2024-02-13 20:01:07.793 -05:00 [INF] Hosting environment: Development
-2024-02-13 20:01:07.793 -05:00 [INF] Content root path: /Users/eddycortez/Development/be/PubSubApiSvc/ApiService
-2024-02-13 20:01:17.402 -05:00 [INF] Starting 'GetAllPermissions' on 'PermissionController'
