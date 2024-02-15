@@ -1,0 +1,20 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pub-subapi-svc-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pub-subapi-svc
+  template:
+    metadata:
+      labels:
+        app: pub-subapi-svc
+    spec:
+      containers:
+      - name: pub-subapi-svc-container
+        image: docker-pub-subapi-svc
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
